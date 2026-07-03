@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type {
   Application,
   DocLanguage,
@@ -51,6 +51,10 @@ export function DocumentsModal({
   const [error, setError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
 
+  // After a generation completes, scroll the freshly created version into view.
+  const activeChipRef = useRef<HTMLButtonElement>(null);
+  const scrollToNewVersion = useRef(false);
+
   const meta = DOC_TYPE_META[activeType];
 
   const docsOfType = useMemo(
@@ -83,6 +87,16 @@ export function DocumentsModal({
       setContent("");
     }
     setShowPreview(false);
+    if (scrollToNewVersion.current) {
+      scrollToNewVersion.current = false;
+      // Let the chip render first, then bring it (and the editor) into view.
+      requestAnimationFrame(() => {
+        activeChipRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId]);
 
@@ -129,12 +143,12 @@ export function DocumentsModal({
         content: text,
         isFinal: false,
       });
+      scrollToNewVersion.current = true;
       setSelectedId(doc.id);
       notify("Document generated.");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Generation failed.";
       setError(message);
-      notify(message, "error");
     } finally {
       setGenerating(false);
     }
@@ -278,13 +292,35 @@ export function DocumentsModal({
                   />
                 </label>
                 {error ? (
-                  <span className="font-mono text-[10px] text-[#B5604F]">{error}</span>
+                  <div
+                    role="alert"
+                    className="flex items-start gap-2.5 rounded-xl border border-[#B5604F]/30 bg-[#B5604F]/10 px-3.5 py-2.5"
+                  >
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#B5604F]" aria-hidden />
+                    <span className="text-sm leading-relaxed text-ink">{error}</span>
+                  </div>
+                ) : null}
+                {generating ? (
+                  <div
+                    role="status"
+                    className="flex items-center gap-3 rounded-xl border border-accent/20 bg-accent/5 px-3.5 py-2.5"
+                  >
+                    <span className="text-accent-ink">
+                      <Spinner />
+                    </span>
+                    <span className="text-sm text-ink">
+                      Generating {meta.label.toLowerCase()}…
+                    </span>
+                    <span className="ml-auto hidden font-mono text-[10px] uppercase tracking-wider text-faint sm:inline">
+                      ~10–30 s
+                    </span>
+                  </div>
                 ) : null}
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleGenerate}
                     disabled={generating}
-                    className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-canvas transition-all duration-300 ease-weighty hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-canvas transition-all duration-200 ease-weighty hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
                   >
                     {generating ? (
                       <>
@@ -297,7 +333,8 @@ export function DocumentsModal({
                   </button>
                   <button
                     onClick={handleNewBlank}
-                    className="text-sm text-muted transition-colors hover:text-ink"
+                    disabled={generating}
+                    className="text-sm text-muted transition-colors hover:text-ink disabled:opacity-40"
                   >
                     or start blank
                   </button>
@@ -326,6 +363,7 @@ export function DocumentsModal({
                   return (
                     <button
                       key={d.id}
+                      ref={active ? activeChipRef : undefined}
                       onClick={() => setSelectedId(d.id)}
                       className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition-all duration-300 ease-weighty ${
                         active
