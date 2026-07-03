@@ -1,0 +1,260 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* Design tokens — quiet, warm, near-black. One accent, used sparingly. */
+/* ------------------------------------------------------------------ */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: "Cormorant Garamond", ui-serif, Georgia, "Times New Roman",
+    serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --color-canvas: #141414;
+  --color-surface: #1a1916;
+  --color-elevated: #211f1b;
+  --color-ink: #ece7de;
+  --color-muted: #938c80;
+  --color-faint: #615b51;
+  --color-line: #2a2823;
+  --color-accent: #ff5b2e;
+  --color-accent-ink: #ff7a52;
+
+  --ease-weighty: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+    color: var(--color-ink);
+  }
+
+  /* Quiet, hairline scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    border-radius: 999px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Calmer autofill on the dark form */
+  input:-webkit-autofill,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: var(--color-ink);
+    -webkit-box-shadow: 0 0 0px 1000px var(--color-elevated) inset;
+    caret-color: var(--color-ink);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Ambient warm glow                                                   */
+/* ------------------------------------------------------------------ */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ambient::before {
+  content: "";
+  position: absolute;
+  top: -28vh;
+  left: 50%;
+  width: 90vw;
+  max-width: 1100px;
+  height: 70vh;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-accent) 16%, transparent),
+    transparent 72%
+  );
+  filter: blur(40px);
+  opacity: 0.55;
+}
+.ambient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 80% at 50% -10%,
+    transparent 55%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Accordion row reveal (height animated via grid-template-rows trick) */
+/* ------------------------------------------------------------------ */
+.accordion {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s var(--ease-weighty);
+}
+.accordion[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.accordion > .accordion-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Modal motion                                                        */
+/* ------------------------------------------------------------------ */
+@keyframes ledger-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes ledger-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-backdrop {
+  animation: ledger-fade-in 0.3s var(--ease-weighty) both;
+}
+.animate-panel {
+  animation: ledger-rise-in 0.42s var(--ease-weighty) both;
+}
+.animate-rise {
+  animation: ledger-rise-in 0.5s var(--ease-weighty) both;
+}
+
+/* Focus rings: warm, subtle */
+@layer base {
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 1px var(--color-canvas),
+      0 0 0 3px color-mix(in srgb, var(--color-accent) 55%, transparent);
+    border-radius: 6px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Markdown preview (document editor)                                  */
+/* ------------------------------------------------------------------ */
+.md-preview {
+  color: var(--color-ink);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+.md-preview h1 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 1.15;
+  margin: 0 0 0.25rem;
+  color: var(--color-ink);
+}
+.md-preview h2 {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.7rem;
+  color: var(--color-muted);
+  margin: 1.4rem 0 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--color-line);
+}
+.md-preview h3 {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 1rem 0 0.25rem;
+  color: var(--color-ink);
+}
+.md-preview p {
+  margin: 0 0 0.7rem;
+}
+.md-preview ul {
+  margin: 0 0 0.7rem;
+  padding-left: 1.1rem;
+  list-style: none;
+}
+.md-preview li {
+  position: relative;
+  padding-left: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+.md-preview li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+}
+.md-preview a {
+  color: var(--color-accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.md-preview strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.md-preview code {
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  background: var(--color-elevated);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.md-preview hr {
+  border: none;
+  border-top: 1px solid var(--color-line);
+  margin: 1rem 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
