@@ -11,9 +11,52 @@ interface Word {
 
 const FONT = "helvetica";
 
+/**
+ * jsPDF's built-in Helvetica is WinAnsi (cp1252): full French coverage
+ * (é è ê ë ç à â î ï ô û ù œ « » – — ' ' " ") but anything outside cp1252
+ * renders as garbage. Map the common offenders, drop the rest.
+ */
+const CHAR_MAP: Record<string, string> = {
+  " ": " ", // non-breaking space
+  " ": " ", // narrow no-break space (common before French punctuation)
+  "‑": "-", // non-breaking hyphen
+  "−": "-", // minus sign
+  "→": "->",
+  "←": "<-",
+  "✓": "-", // ✓
+  "✔": "-", // ✔
+  "●": "•",
+  "▪": "•",
+  "‣": "•",
+};
+
+// cp1252's printable extras above U+00FF.
+const WINANSI_EXTRA = new Set(
+  "€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ",
+);
+
+function toWinAnsi(text: string): string {
+  let out = "";
+  for (const ch of text) {
+    const mapped = CHAR_MAP[ch];
+    if (mapped !== undefined) {
+      out += mapped;
+    } else if (ch.codePointAt(0)! <= 0xff || WINANSI_EXTRA.has(ch)) {
+      out += ch;
+    }
+    // else: not representable (emoji, ✦, CJK, …) — drop it
+  }
+  return out;
+}
+
 /** Split a markdown line into words, tracking **bold** runs; drops `code` ticks. */
 function toWords(text: string): Word[] {
-  const clean = text.replace(/`/g, "");
+  const clean = toWinAnsi(text)
+    .replace(/`/g, "")
+    // [label](url) → "label (url)" so links survive as plain text
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1 ($2)")
+    // strip single-asterisk *emphasis* markers (bold ** pairs are kept for below)
+    .replace(/(?<!\*)\*(?!\*)/g, "");
   const parts = clean.split("**");
   const words: Word[] = [];
   parts.forEach((part, i) => {

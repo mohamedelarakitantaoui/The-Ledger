@@ -49,7 +49,6 @@ export function DocumentsModal({
   const [content, setContent] = useState("");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showPreview, setShowPreview] = useState(false);
 
   // After a generation completes, scroll the freshly created version into view.
   const activeChipRef = useRef<HTMLButtonElement>(null);
@@ -86,7 +85,6 @@ export function DocumentsModal({
       setTitle("");
       setContent("");
     }
-    setShowPreview(false);
     if (scrollToNewVersion.current) {
       scrollToNewVersion.current = false;
       // Let the chip render first, then bring it (and the editor) into view.
@@ -195,7 +193,7 @@ export function DocumentsModal({
         role="dialog"
         aria-modal="true"
         aria-label="Documents"
-        className="animate-panel relative flex h-full w-full max-w-3xl flex-col overflow-hidden border border-line bg-surface shadow-2xl sm:h-auto sm:max-h-[92dvh] sm:rounded-3xl"
+        className="animate-panel relative flex h-full w-full max-w-5xl flex-col overflow-hidden border border-line bg-surface shadow-2xl sm:h-auto sm:max-h-[92dvh] sm:rounded-3xl"
       >
         {/* Header */}
         <div className="flex items-center justify-between gap-4 border-b border-line px-6 py-5">
@@ -365,14 +363,18 @@ export function DocumentsModal({
                       key={d.id}
                       ref={active ? activeChipRef : undefined}
                       onClick={() => setSelectedId(d.id)}
-                      className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition-all duration-300 ease-weighty ${
+                      className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition-all duration-200 ease-weighty ${
                         active
-                          ? "border-accent/40 bg-accent/10 text-ink"
-                          : "border-line bg-surface/40 text-muted hover:text-ink/80"
+                          ? d.isFinal
+                            ? "border-[#C9A24B]/50 bg-[#C9A24B]/10 text-ink"
+                            : "border-accent/40 bg-accent/10 text-ink"
+                          : d.isFinal
+                            ? "border-[#C9A24B]/25 bg-surface/40 text-muted hover:text-ink/80"
+                            : "border-line bg-surface/40 text-muted hover:text-ink/80"
                       }`}
                     >
                       {d.isFinal ? (
-                        <span className="text-accent-ink" aria-label="Final">
+                        <span className="text-[#C9A24B]" aria-label="Final">
                           ★
                         </span>
                       ) : null}
@@ -387,9 +389,15 @@ export function DocumentsModal({
             </div>
           ) : null}
 
-          {/* Editor */}
+          {/* Editor + live preview: side-by-side on desktop, stacked on mobile */}
           {selected ? (
-            <div className="flex flex-col gap-3">
+            <div
+              className={`flex flex-col gap-3 ${
+                selected.isFinal
+                  ? "-mx-3 rounded-2xl border border-[#C9A24B]/25 bg-[#C9A24B]/[0.03] px-3 pb-3 pt-2"
+                  : ""
+              }`}
+            >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <input
                   value={title}
@@ -397,37 +405,43 @@ export function DocumentsModal({
                   className="min-w-0 flex-1 bg-transparent text-base font-medium text-ink focus:outline-none"
                   aria-label="Document title"
                 />
-                <div className="flex items-center gap-1 rounded-full border border-line p-0.5">
-                  <SegBtn active={!showPreview} onClick={() => setShowPreview(false)}>
-                    Edit
-                  </SegBtn>
-                  <SegBtn active={showPreview} onClick={() => setShowPreview(true)}>
-                    Preview
-                  </SegBtn>
-                </div>
+                {selected.isFinal ? (
+                  <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-[#C9A24B]">
+                    ★ Final version
+                  </span>
+                ) : null}
               </div>
 
-              {showPreview ? (
-                content.trim() ? (
-                  <div
-                    className="md-preview min-h-64 rounded-2xl border border-line bg-elevated/30 p-5"
-                    dangerouslySetInnerHTML={{ __html: markdownToHtml(content) }}
+              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                <div className="flex min-w-0 flex-col gap-1.5">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-faint">
+                    Markdown
+                  </span>
+                  <textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    rows={18}
+                    spellCheck={false}
+                    placeholder="Write or generate your document in Markdown…"
+                    className="min-h-72 w-full flex-1 resize-y rounded-2xl border border-line bg-elevated/30 p-4 font-mono text-[13px] leading-relaxed text-ink placeholder:text-faint focus:border-accent/50 focus:outline-none lg:resize-none"
                   />
-                ) : (
-                  <p className="rounded-2xl border border-line bg-elevated/30 p-5 text-sm italic text-faint">
-                    Nothing to preview yet.
-                  </p>
-                )
-              ) : (
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  rows={16}
-                  spellCheck={false}
-                  placeholder="Write or generate your document in Markdown…"
-                  className="w-full resize-y rounded-2xl border border-line bg-elevated/30 p-4 font-mono text-[13px] leading-relaxed text-ink placeholder:text-faint focus:border-accent/50 focus:outline-none"
-                />
-              )}
+                </div>
+                <div className="flex min-w-0 flex-col gap-1.5">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-faint">
+                    Preview
+                  </span>
+                  {content.trim() ? (
+                    <div
+                      className="md-preview max-h-[32rem] min-h-72 flex-1 overflow-y-auto rounded-2xl border border-line bg-elevated/30 p-5"
+                      dangerouslySetInnerHTML={{ __html: markdownToHtml(content) }}
+                    />
+                  ) : (
+                    <p className="min-h-72 flex-1 rounded-2xl border border-dashed border-line bg-elevated/30 p-5 text-sm italic text-faint">
+                      Nothing to preview yet.
+                    </p>
+                  )}
+                </div>
+              </div>
 
               {/* Editor actions */}
               <div className="flex flex-wrap items-center gap-2 border-t border-line pt-3">
@@ -441,9 +455,13 @@ export function DocumentsModal({
                 <button
                   onClick={() => onSetFinal(app.id, activeType, selected.id)}
                   disabled={selected.isFinal}
-                  className="rounded-full border border-line px-4 py-2 font-mono text-[10px] uppercase tracking-wider text-ink transition-colors hover:border-accent/40 hover:text-accent-ink disabled:opacity-40"
+                  className={`rounded-full border px-4 py-2 font-mono text-[10px] uppercase tracking-wider transition-colors ${
+                    selected.isFinal
+                      ? "border-[#C9A24B]/40 text-[#C9A24B] disabled:opacity-100"
+                      : "border-line text-ink hover:border-[#C9A24B]/40 hover:text-[#C9A24B]"
+                  }`}
                 >
-                  {selected.isFinal ? "★ Final" : "Mark final"}
+                  {selected.isFinal ? "★ Final" : "☆ Mark final"}
                 </button>
 
                 <span className="mx-1 h-4 w-px bg-line" />
