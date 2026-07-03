@@ -11,8 +11,16 @@
  * deployment you'd move generation behind a tiny server proxy that holds the key
  * and exposes the same `generateDocument` shape.
  *
+ * Key resolution order:
+ *   1. VITE_ANTHROPIC_API_KEY (build-time .env)
+ *   2. localStorage "ledger_api_key" (set from the in-app Settings panel)
+ *
  * Public API:
  *   isConfigured()                              -> boolean
+ *   keySource()                                 -> "env" | "local" | null
+ *   getStoredKey() / setStoredKey() / clearStoredKey()
+ *   testApiKey(key?)                            -> Promise<void>  (throws with reason)
+ *   subscribeKeyChange(listener)                -> unsubscribe
  *   generateDocument(type, profile, job, extra) -> Promise<string>  (markdown)
  */
 
@@ -38,13 +46,112 @@ export interface GenerateExtra {
   customPrompt?: string;
 }
 
-function readKey(): string | undefined {
+/** localStorage key holding a user-pasted API key (Settings panel). */
+export const API_KEY_STORAGE_KEY = "ledger_api_key";
+
+function readEnvKey(): string | undefined {
   const key = import.meta.env.VITE_ANTHROPIC_API_KEY;
   return typeof key === "string" && key.trim() ? key.trim() : undefined;
 }
 
+export function getStoredKey(): string | undefined {
+  try {
+    const key = window.localStorage.getItem(API_KEY_STORAGE_KEY);
+    return key && key.trim() ? key.trim() : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function readKey(): string | undefined {
+  return readEnvKey() ?? getStoredKey();
+}
+
 export function isConfigured(): boolean {
   return !!readKey();
+}
+
+/** Where the active key comes from — drives the Settings indicator copy. */
+export function keySource(): "env" | "local" | null {
+  if (readEnvKey()) return "env";
+  if (getStoredKey()) return "local";
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Key change notifications — so the UI can react when the key is saved/cleared
+// ---------------------------------------------------------------------------
+
+type KeyListener = () => void;
+const keyListeners = new Set<KeyListener>();
+
+function notifyKeyChange(): void {
+  for (const listener of keyListeners) listener();
+}
+
+export function subscribeKeyChange(listener: KeyListener): () => void {
+  keyListeners.add(listener);
+  return () => {
+    keyListeners.delete(listener);
+  };
+}
+
+export function setStoredKey(key: string): void {
+  try {
+    window.localStorage.setItem(API_KEY_STORAGE_KEY, key.trim());
+  } catch {
+    throw new Error(
+      "Couldn't save the key — browser storage is full or unavailable.",
+    );
+  }
+  notifyKeyChange();
+}
+
+export function clearStoredKey(): void {
+  try {
+    window.localStorage.removeItem(API_KEY_STORAGE_KEY);
+  } catch {
+    /* nothing to clear */
+  }
+  notifyKeyChange();
+}
+
+// ---------------------------------------------------------------------------
+// Key test — minimal 1-token call to confirm the key actually works
+// ---------------------------------------------------------------------------
+
+/**
+ * Fire the smallest possible Messages API request. Resolves when the key
+ * works; throws with a human-readable reason otherwise.
+ */
+export async function testApiKey(key?: string): Promise<void> {
+  const apiKey = key?.trim() || readKey();
+  if (!apiKey) throw new Error("No API key to test.");
+
+  let res: Response;
+  try {
+    res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": ANTHROPIC_VERSION,
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: 1,
+        messages: [{ role: "user", content: "Hi" }],
+      }),
+    });
+  } catch {
+    throw new Error(
+      "Couldn't reach the Anthropic API. Check your connection and try again.",
+    );
+  }
+  if (!res.ok) {
+    throw new Error(await describeError(res));
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -60,7 +167,7 @@ export async function generateDocument(
   const apiKey = readKey();
   if (!apiKey) {
     throw new Error(
-      "No API key configured. Add VITE_ANTHROPIC_API_KEY to a .env file to enable AI generation (the app still works without it).",
+      "No API key configured. Paste one in Settings (or add VITE_ANTHROPIC_API_KEY to a .env file) to enable AI generation — the app still works without it.",
     );
   }
 
@@ -119,7 +226,7 @@ async function describeError(res: Response): Promise<string> {
   }
   switch (res.status) {
     case 401:
-      return "Your API key was rejected (401). Double-check VITE_ANTHROPIC_API_KEY.";
+      return "Your API key was rejected (401). Double-check the key in Settings (or VITE_ANTHROPIC_API_KEY).";
     case 403:
       return "That API key doesn't have access to this model (403).";
     case 429:

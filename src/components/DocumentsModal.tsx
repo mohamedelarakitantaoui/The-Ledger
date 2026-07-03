@@ -244,10 +244,9 @@ export function DocumentsModal({
                   AI generation not configured
                 </span>
                 <p className="text-sm text-muted">
-                  Add <code className="font-mono text-xs text-ink">VITE_ANTHROPIC_API_KEY</code> to a{" "}
-                  <code className="font-mono text-xs text-ink">.env</code> file and restart the dev
-                  server to enable one-click drafts. You can still write and edit documents by hand
-                  below.
+                  Paste your Anthropic API key in <span className="text-ink">Settings</span> (the
+                  gear icon in the header) to enable one-click drafts. You can still write and edit
+                  documents by hand below.
                 </p>
               </div>
             ) : (

@@ -8,6 +8,9 @@ interface Props {
   onNew: () => void;
   onExport: () => void;
   onImportFile: (file: File) => void;
+  onOpenSettings: () => void;
+  /** Whether an API key is configured — drives the settings status dot. */
+  aiReady: boolean;
 }
 
 export function Header({
@@ -16,6 +19,8 @@ export function Header({
   onNew,
   onExport,
   onImportFile,
+  onOpenSettings,
+  aiReady,
 }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -46,6 +51,25 @@ export function Header({
               <path d="M5 19h14" strokeLinecap="round" />
             </svg>
           </IconButton>
+          <span className="relative">
+            <IconButton label="Settings" onClick={onOpenSettings}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </IconButton>
+            <span
+              className={`pointer-events-none absolute right-0.5 top-0.5 h-2 w-2 rounded-full border border-canvas ${
+                aiReady ? "bg-[#5FA37A]" : "bg-[#B5604F]"
+              }`}
+              title={aiReady ? "API key configured" : "No API key"}
+              aria-hidden
+            />
+          </span>
 
           <input
             ref={fileRef}

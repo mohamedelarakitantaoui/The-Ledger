@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   Application,
   ApplicationInput,
@@ -12,7 +12,7 @@ import { useProfile } from "./hooks/useProfile";
 import { useDocuments } from "./hooks/useDocuments";
 import { computeStats } from "./utils/stats";
 import { todayISO } from "./utils/format";
-import { isConfigured } from "./ai";
+import { isConfigured, subscribeKeyChange } from "./ai";
 
 import { Header, type View } from "./components/Header";
 import { Dashboard } from "./components/Dashboard";
@@ -20,6 +20,7 @@ import { Filters } from "./components/Filters";
 import { ApplicationList } from "./components/ApplicationList";
 import { ApplicationModal } from "./components/ApplicationModal";
 import { DocumentsModal } from "./components/DocumentsModal";
+import { SettingsModal } from "./components/SettingsModal";
 import { ProfilePage } from "./components/ProfilePage";
 import { EmptyState } from "./components/EmptyState";
 import { Toast, type ToastData } from "./components/Toast";
@@ -35,9 +36,12 @@ export default function App() {
   const { profile, save: saveProfile } = useProfile();
   const docs = useDocuments();
 
-  const aiReady = isConfigured();
+  // Reactive: re-checks when the key is saved/cleared in Settings.
+  const [aiReady, setAiReady] = useState(() => isConfigured());
+  useEffect(() => subscribeKeyChange(() => setAiReady(isConfigured())), []);
 
   const [view, setView] = useState<View>("ledger");
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [pipeline, setPipeline] = useState<Pipeline>(DEFAULT_PIPELINE);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
   const [query, setQuery] = useState("");
@@ -197,6 +201,8 @@ export default function App() {
           onNew={openNew}
           onExport={handleExport}
           onImportFile={handleImportFile}
+          onOpenSettings={() => setSettingsOpen(true)}
+          aiReady={aiReady}
         />
 
         {view === "profile" ? (
@@ -273,6 +279,10 @@ export default function App() {
           onClose={closeModal}
           onSubmit={handleSubmit}
         />
+      ) : null}
+
+      {settingsOpen ? (
+        <SettingsModal onClose={() => setSettingsOpen(false)} notify={notify} />
       ) : null}
 
       {docsApp ? (
