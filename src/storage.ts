@@ -119,9 +119,43 @@ function readJSON<T>(key: string): T | null {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Storage-failure signal — full quota, private-mode restrictions, etc.
+// The UI subscribes to surface a warning instead of failing silently.
+// ---------------------------------------------------------------------------
+
+type ErrorListener = (message: string) => void;
+const errorListeners = new Set<ErrorListener>();
+
+export function subscribeStorageError(listener: ErrorListener): () => void {
+  errorListeners.add(listener);
+  return () => {
+    errorListeners.delete(listener);
+  };
+}
+
+function reportStorageError(message: string): void {
+  for (const listener of errorListeners) listener(message);
+  if (errorListeners.size === 0 && typeof console !== "undefined") {
+    console.warn(`[the-ledger] ${message}`);
+  }
+}
+
 function writeJSON(key: string, value: unknown): void {
-  if (hasStorage()) {
+  if (!hasStorage()) {
+    reportStorageError(
+      "Browser storage is unavailable — changes won't survive a reload. Export a backup.",
+    );
+    notify();
+    return;
+  }
+  try {
     window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // QuotaExceededError (or a private-mode write block).
+    reportStorageError(
+      "Browser storage is full — the last change couldn't be saved. Export a backup and clear old data.",
+    );
   }
   notify();
 }
@@ -507,29 +541,41 @@ export function importData(json: string): ImportResult {
     throw new Error("Couldn't find any applications in that file.");
   }
 
+  // Validate EVERYTHING before touching storage, so a malformed file can
+  // never partially overwrite (or wipe) existing data.
   const apps = list
+    .filter((entry) => entry && typeof entry === "object")
     .map(normalizeApp)
     .filter((a) => a.company || a.role);
-  writeJSON(STORAGE_KEY, apps);
 
-  let documents = 0;
-  let profileImported = false;
+  if (list.length > 0 && apps.length === 0) {
+    throw new Error(
+      "That file doesn't look like a Ledger backup — no valid applications in it.",
+    );
+  }
+
+  let docs: GeneratedDoc[] | null = null;
+  let profile: Profile | null = null;
 
   if (isEnvelope) {
     if (Array.isArray(envelope.documents)) {
-      const docs = envelope.documents.map(normalizeDoc);
-      writeJSON(DOCUMENTS_KEY, docs);
-      documents = docs.length;
+      docs = envelope.documents
+        .filter((entry) => entry && typeof entry === "object")
+        .map(normalizeDoc);
     }
     if (envelope.profile && typeof envelope.profile === "object") {
-      writeJSON(PROFILE_KEY, normalizeProfile(envelope.profile));
-      profileImported = true;
+      profile = normalizeProfile(envelope.profile);
     }
   }
 
+  // All parsed cleanly — now persist.
+  writeJSON(STORAGE_KEY, apps);
+  if (docs) writeJSON(DOCUMENTS_KEY, docs);
+  if (profile) writeJSON(PROFILE_KEY, profile);
+
   return {
     applications: apps.length,
-    documents,
-    profile: profileImported,
+    documents: docs?.length ?? 0,
+    profile: profile !== null,
   };
 }

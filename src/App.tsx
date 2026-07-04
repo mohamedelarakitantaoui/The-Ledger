@@ -13,6 +13,7 @@ import { useDocuments } from "./hooks/useDocuments";
 import { computeStats } from "./utils/stats";
 import { todayISO } from "./utils/format";
 import { isConfigured, subscribeKeyChange } from "./ai";
+import { subscribeStorageError } from "./storage";
 
 import { Header, type View } from "./components/Header";
 import { Dashboard } from "./components/Dashboard";
@@ -53,6 +54,16 @@ export default function App() {
   function notify(message: string, tone: ToastData["tone"] = "info") {
     setToast({ id: Date.now(), message, tone });
   }
+
+  // Storage failures (quota full, private-mode blocks) surface as a warning
+  // toast instead of silently dropping the write.
+  useEffect(
+    () =>
+      subscribeStorageError((message) =>
+        setToast({ id: Date.now(), message, tone: "error" }),
+      ),
+    [],
+  );
 
   // ---- Document indexes ---------------------------------------------------
 

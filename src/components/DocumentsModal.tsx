@@ -49,6 +49,7 @@ export function DocumentsModal({
   const [content, setContent] = useState("");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   // After a generation completes, scroll the freshly created version into view.
   const activeChipRef = useRef<HTMLButtonElement>(null);
@@ -85,6 +86,7 @@ export function DocumentsModal({
       setTitle("");
       setContent("");
     }
+    setConfirmingDelete(false);
     if (scrollToNewVersion.current) {
       scrollToNewVersion.current = false;
       // Let the chip render first, then bring it (and the editor) into view.
@@ -479,15 +481,36 @@ export function DocumentsModal({
                   Export .md
                 </button>
 
-                <button
-                  onClick={() => {
-                    onDelete(selected.id);
-                    notify("Document deleted.");
-                  }}
-                  className="ml-auto rounded-full px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-faint transition-colors hover:text-[#B5604F]"
-                >
-                  Delete
-                </button>
+                {confirmingDelete ? (
+                  <span className="ml-auto flex items-center gap-1">
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-muted">
+                      Delete this version?
+                    </span>
+                    <button
+                      onClick={() => {
+                        setConfirmingDelete(false);
+                        onDelete(selected.id);
+                        notify("Document deleted.");
+                      }}
+                      className="rounded-full px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-[#B5604F] transition-colors hover:text-[#d2705c]"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      onClick={() => setConfirmingDelete(false)}
+                      className="rounded-full px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-muted transition-colors hover:text-ink"
+                    >
+                      No
+                    </button>
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => setConfirmingDelete(true)}
+                    className="ml-auto rounded-full px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-faint transition-colors hover:text-[#B5604F]"
+                  >
+                    Delete
+                  </button>
+                )}
               </div>
             </div>
           ) : (
