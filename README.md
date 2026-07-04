@@ -28,15 +28,20 @@ Open the URL Vite prints (usually <http://localhost:5173>).
 
 ### Optional — enable AI document generation
 
-Copy the env template and paste an Anthropic API key, then restart `npm run dev`:
+Two ways to provide an Anthropic API key (get one at <https://console.anthropic.com/>):
 
-```bash
-cp .env.example .env
-# edit .env →  VITE_ANTHROPIC_API_KEY=sk-ant-...
-```
+1. **In the app** — open **Settings** (gear icon in the header), paste the key,
+   hit **Test key** to confirm it works. Stored in `localStorage`
+   (`ledger_api_key`), no restart needed.
+2. **Via `.env`** — takes precedence over the in-app key:
 
-Get a key at <https://console.anthropic.com/>. Without a key, you can still write
-and edit every document by hand — only the one-click "Generate" buttons are off.
+   ```bash
+   cp .env.example .env
+   # edit .env →  VITE_ANTHROPIC_API_KEY=sk-ant-...
+   ```
+
+Without a key, you can still write and edit every document by hand — only the
+one-click "Generate" buttons are off.
 
 > ⚠️ **Key visibility.** Vite inlines `VITE_*` variables into the built JavaScript,
 > so the key is present in the client bundle. That's fine for a **local, personal**
