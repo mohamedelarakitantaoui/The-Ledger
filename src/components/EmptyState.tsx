@@ -27,7 +27,7 @@ export function EmptyState({ filtered, onAdd, onClearFilters }: Props) {
         ) : (
           <button
             onClick={onAdd}
-            className="rounded-full bg-accent px-6 py-2.5 text-sm font-medium text-canvas transition-all duration-300 ease-weighty hover:brightness-110"
+            className="rounded-full bg-accent px-6 py-2.5 text-sm font-medium text-canvas transition-all duration-200 ease-weighty hover:brightness-110"
           >
             Log an application
           </button>

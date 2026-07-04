@@ -86,7 +86,7 @@ export function Header({
           {view === "ledger" ? (
             <button
               onClick={onNew}
-              className="ml-1 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-canvas transition-all duration-300 ease-weighty hover:brightness-110 active:scale-[0.98]"
+              className="ml-1 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-canvas transition-all duration-200 ease-weighty hover:brightness-110 active:scale-[0.98]"
             >
               <svg
                 className="h-4 w-4"
@@ -153,7 +153,7 @@ function IconButton({ label, onClick, children }: IconButtonProps) {
       onClick={onClick}
       aria-label={label}
       title={label}
-      className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-muted transition-all duration-300 hover:border-line hover:text-ink [&>svg]:h-4.5 [&>svg]:w-4.5"
+      className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-muted transition-all duration-200 hover:border-line hover:text-ink [&>svg]:h-4.5 [&>svg]:w-4.5"
     >
       {children}
     </button>

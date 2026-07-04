@@ -436,7 +436,7 @@ export function DocumentsModal({
                       dangerouslySetInnerHTML={{ __html: markdownToHtml(content) }}
                     />
                   ) : (
-                    <p className="min-h-72 flex-1 rounded-2xl border border-dashed border-line bg-elevated/30 p-5 text-sm italic text-faint">
+                    <p className="min-h-72 flex-1 rounded-2xl border border-dashed border-line bg-elevated/30 p-5 font-serif text-base italic text-faint">
                       Nothing to preview yet.
                     </p>
                   )}
@@ -448,7 +448,7 @@ export function DocumentsModal({
                 <button
                   onClick={handleSave}
                   disabled={!dirty}
-                  className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-canvas transition-all duration-300 ease-weighty hover:brightness-110 active:scale-[0.98] disabled:opacity-40"
+                  className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-canvas transition-all duration-200 ease-weighty hover:brightness-110 active:scale-[0.98] disabled:opacity-40"
                 >
                   {dirty ? "Save" : "Saved"}
                 </button>
@@ -491,7 +491,7 @@ export function DocumentsModal({
               </div>
             </div>
           ) : (
-            <p className="rounded-2xl border border-dashed border-line p-8 text-center text-sm italic text-faint">
+            <p className="rounded-2xl border border-dashed border-line p-8 text-center font-serif text-base italic text-faint">
               No {meta.short} yet for this application.
               {aiReady ? " Generate one above" : " Start a blank version above"}.
             </p>

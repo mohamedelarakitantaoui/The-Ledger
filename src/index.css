@@ -9,13 +9,13 @@
     serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
-  --color-canvas: #141414;
-  --color-surface: #1a1916;
-  --color-elevated: #211f1b;
-  --color-ink: #ece7de;
-  --color-muted: #938c80;
-  --color-faint: #615b51;
-  --color-line: #2a2823;
+  --color-canvas: #0a0a09;
+  --color-surface: #121110;
+  --color-elevated: #181715;
+  --color-ink: #f5f5f0;
+  --color-muted: #98917f;
+  --color-faint: #67604f;
+  --color-line: #23211c;
   --color-accent: #ff5b2e;
   --color-accent-ink: #ff7a52;
 
@@ -126,7 +126,7 @@
 .accordion {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.45s var(--ease-weighty);
+  transition: grid-template-rows 0.3s var(--ease-weighty);
 }
 .accordion[data-open="true"] {
   grid-template-rows: 1fr;
@@ -158,13 +158,13 @@
   }
 }
 .animate-backdrop {
-  animation: ledger-fade-in 0.3s var(--ease-weighty) both;
+  animation: ledger-fade-in 0.15s var(--ease-weighty) both;
 }
 .animate-panel {
-  animation: ledger-rise-in 0.42s var(--ease-weighty) both;
+  animation: ledger-rise-in 0.2s var(--ease-weighty) both;
 }
 .animate-rise {
-  animation: ledger-rise-in 0.5s var(--ease-weighty) both;
+  animation: ledger-rise-in 0.2s var(--ease-weighty) both;
 }
 
 /* Focus rings: warm, subtle */

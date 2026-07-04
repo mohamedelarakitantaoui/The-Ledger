@@ -249,7 +249,7 @@ export function ApplicationModal({
             </button>
             <button
               type="submit"
-              className="rounded-full bg-accent px-6 py-2.5 text-sm font-medium text-canvas transition-all duration-300 ease-weighty hover:brightness-110 active:scale-[0.98]"
+              className="rounded-full bg-accent px-6 py-2.5 text-sm font-medium text-canvas transition-all duration-200 ease-weighty hover:brightness-110 active:scale-[0.98]"
             >
               {editing ? "Save changes" : "Add application"}
             </button>

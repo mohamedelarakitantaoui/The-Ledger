@@ -36,7 +36,7 @@ export const STATUS_META: Record<Status, { label: string; color: string }> = {
   Wishlist: { label: "Wishlist", color: "#7C7A6E" },
   Applied: { label: "Applied", color: "#6E8FB8" },
   Pending: { label: "Pending", color: "#C9A24B" },
-  Interview: { label: "Interview", color: "#FF5B2E" },
+  Interview: { label: "Interview", color: "#D97A50" },
   Accepted: { label: "Accepted", color: "#5FA37A" },
   Rejected: { label: "Rejected", color: "#B5604F" },
   Ghosted: { label: "Ghosted", color: "#6A6A78" },

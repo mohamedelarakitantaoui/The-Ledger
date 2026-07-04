@@ -56,7 +56,7 @@ export function Filters({
         <button
           onClick={onToggleNeedsCv}
           aria-pressed={needsCvOnly}
-          className={`flex shrink-0 snap-start items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300 ease-weighty ${
+          className={`flex shrink-0 snap-start items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs transition-all duration-200 ease-weighty ${
             needsCvOnly
               ? "border-[#C9A24B]/40 bg-[#C9A24B]/10 text-ink"
               : "border-line bg-surface/40 text-muted hover:text-ink/80"
@@ -108,7 +108,7 @@ function Chip({ label, count, color, active, onClick }: ChipProps) {
     <button
       onClick={onClick}
       aria-pressed={active}
-      className={`group flex shrink-0 snap-start items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs transition-all duration-300 ease-weighty ${
+      className={`group flex shrink-0 snap-start items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs transition-all duration-200 ease-weighty ${
         active
           ? "border-accent/40 bg-accent/10 text-ink"
           : "border-line bg-surface/40 text-muted hover:border-line hover:text-ink/80"

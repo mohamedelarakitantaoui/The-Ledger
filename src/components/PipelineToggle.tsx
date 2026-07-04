@@ -18,7 +18,7 @@ export function PipelineToggle({ value, counts, onChange }: Props) {
     >
       <span
         aria-hidden
-        className="absolute inset-y-1 left-1 rounded-full bg-elevated transition-transform duration-500 ease-weighty"
+        className="absolute inset-y-1 left-1 rounded-full bg-elevated transition-transform duration-200 ease-weighty"
         style={{
           width: "calc(50% - 0.25rem)",
           transform: `translateX(${activeIndex * 100}%)`,
@@ -32,7 +32,7 @@ export function PipelineToggle({ value, counts, onChange }: Props) {
             role="tab"
             aria-selected={active}
             onClick={() => onChange(pipeline)}
-            className={`relative z-10 flex items-center justify-center gap-2 rounded-full px-3 py-2 text-xs font-medium transition-colors duration-300 sm:text-sm ${
+            className={`relative z-10 flex items-center justify-center gap-2 rounded-full px-3 py-2 text-xs font-medium transition-colors duration-200 sm:text-sm ${
               active ? "text-ink" : "text-muted hover:text-ink/80"
             }`}
           >

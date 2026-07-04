@@ -446,7 +446,7 @@ export function ProfilePage({ profile, onSave }: Props) {
             </button>
             <button
               onClick={() => onSave(draft)}
-              className="rounded-full bg-accent px-5 py-2 text-sm font-medium text-canvas transition-all duration-300 ease-weighty hover:brightness-110 active:scale-[0.98]"
+              className="rounded-full bg-accent px-5 py-2 text-sm font-medium text-canvas transition-all duration-200 ease-weighty hover:brightness-110 active:scale-[0.98]"
             >
               Save profile
             </button>
@@ -488,7 +488,7 @@ function Section({ title, blurb, onAdd, empty, children }: SectionProps) {
       </div>
       <div className="flex flex-col gap-4">{children}</div>
       {onAdd && empty ? (
-        <p className="text-sm italic text-faint">Nothing added yet.</p>
+        <p className="font-serif text-base italic text-faint">Nothing added yet.</p>
       ) : null}
     </section>
   );

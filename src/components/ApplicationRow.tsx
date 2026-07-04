@@ -72,7 +72,7 @@ export function ApplicationRow({
         </span>
 
         <svg
-          className={`h-4 w-4 shrink-0 text-faint transition-transform duration-500 ease-weighty ${
+          className={`h-4 w-4 shrink-0 text-faint transition-transform duration-200 ease-weighty ${
             expanded ? "rotate-180 text-accent-ink" : ""
           }`}
           viewBox="0 0 24 24"
@@ -101,7 +101,7 @@ export function ApplicationRow({
                 {app.notes}
               </p>
             ) : (
-              <p className="mt-5 text-sm italic text-faint">No notes yet.</p>
+              <p className="mt-5 font-serif text-base italic text-faint">No notes yet.</p>
             )}
 
             {app.jobUrl ? (
