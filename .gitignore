@@ -17,6 +17,12 @@ dist-ssr
 .env.*
 !.env.example
 
+# Personal data — real profile/application seed, kept local only (import in-app)
+seed.json
+
+# Local MCP server config (not shared)
+.mcp.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
