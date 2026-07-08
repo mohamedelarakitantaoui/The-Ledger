@@ -1,45 +1,140 @@
-import type { Application, Profile } from "./types";
+import type { Application, GeneratedDoc, Profile } from "./types";
 
 /**
- * Two example applications so the UI isn't empty on first launch.
- * Written only once — when no ledger exists in localStorage yet.
+ * Seed data for The Ledger — Mamoun's real profile and application hunt.
  *
- * Ids and timestamps are fixed so the seed is deterministic and easy to
- * recognise (and remove) later.
+ * Written only once, when the corresponding localStorage key is still empty
+ * (see storage.ts). Ids and timestamps are fixed so the seed is deterministic.
+ *
+ * PLACEHOLDERS to edit in-app (never fabricated):
+ *   - `dateApplied` is set to the seed date below for every entry — replace with
+ *     the real submission date. For the two not-yet-applied leads it just marks
+ *     when the row was created.
+ *   - `platform` values are best-guess (the source data didn't record where each
+ *     listing came from) — correct them in the edit modal.
+ *   - Cities for Phi Partners / Leyton / Oracle / Smile / Saham are best-guess.
  */
+
+/** Date the ledger was seeded — a clearly-marked placeholder, not a real submit date. */
+const SEED_DATE = "2026-07-07";
+const SEED_TS = "2026-07-07T00:00:00.000Z";
+
 export function seedApplications(): Application[] {
   return [
     {
-      id: "seed-oncf-backend",
-      company: "ONCF Digital",
-      role: "Junior Backend Developer",
-      platform: "ReKrute",
+      id: "seed-dell-ips",
+      company: "Dell Technologies",
+      role: "Inside Product Specialist",
+      platform: "Company site",
       pipeline: "Job (Morocco)",
       status: "Interview",
-      city: "Rabat",
-      salary: "9 000 – 12 000 MAD",
-      jobUrl: "https://www.rekrute.com/",
-      dateApplied: "2026-05-21",
+      city: "Casablanca",
+      dateApplied: SEED_DATE,
       notes:
-        "Spring Boot + PostgreSQL stack. Recruiter call went well — technical round scheduled. Mentioned my final-year project.",
-      createdAt: "2026-05-21T09:12:00.000Z",
-      updatedAt: "2026-05-30T16:40:00.000Z",
+        "Furthest along — interview / assessment stage. Recruiter: Ghita (HR).\n" +
+        "Business-case presentation due July 12: a 15-min deck explaining AI in " +
+        "simple terms using Dell AI Factory / PowerEdge / PowerScale / PowerProtect.\n" +
+        "[placeholder] platform + applied-date are guesses — edit.",
+      createdAt: SEED_TS,
+      updatedAt: SEED_TS,
     },
     {
-      id: "seed-capgemini-alt",
-      company: "Capgemini Engineering",
-      role: "Alternance — Software Engineer (M2)",
-      platform: "LinkedIn",
-      pipeline: "Master/Alternance (France)",
+      id: "seed-intelcia-swe",
+      company: "Intelcia Solutions",
+      role: "Software Engineer",
+      platform: "ESN/Referral",
+      pipeline: "Job (Morocco)",
       status: "Applied",
-      city: "Toulouse",
-      salary: "",
-      jobUrl: "https://www.linkedin.com/jobs/",
-      dateApplied: "2026-06-02",
+      city: "Rabat",
+      dateApplied: SEED_DATE,
       notes:
-        "Alternance rythme 3 semaines / 1 semaine. Need to follow up with the school for the convention de stage.",
-      createdAt: "2026-06-02T11:05:00.000Z",
-      updatedAt: "2026-06-02T11:05:00.000Z",
+        "Former intern here — warm connection.\n" +
+        "CV used: CV_Intelcia_Software_Engineer.tex.\n" +
+        "[placeholder] applied-date is a guess — edit.",
+      createdAt: SEED_TS,
+      updatedAt: SEED_TS,
+    },
+    {
+      id: "seed-phi-quant",
+      company: "Phi Partners",
+      role: "Quant Developer",
+      platform: "Company site",
+      pipeline: "Job (Morocco)",
+      status: "Applied",
+      city: "Casablanca",
+      dateApplied: SEED_DATE,
+      notes:
+        "CV used: CV_PhiPartners_Quant_Developer.tex.\n" +
+        "[placeholder] city + platform + applied-date are guesses — edit.",
+      createdAt: SEED_TS,
+      updatedAt: SEED_TS,
+    },
+    {
+      id: "seed-leyton-ai",
+      company: "Leyton CognitX",
+      role: "AI Engineer",
+      platform: "Company site",
+      pipeline: "Job (Morocco)",
+      status: "Applied",
+      city: "Casablanca",
+      dateApplied: SEED_DATE,
+      notes:
+        "CV used: CV_LeytonCognitX_AI_Engineer.tex.\n" +
+        "[placeholder] city + platform + applied-date are guesses — edit.",
+      createdAt: SEED_TS,
+      updatedAt: SEED_TS,
+    },
+    {
+      id: "seed-oracle-pfe",
+      company: "Oracle Morocco",
+      role: "R&D PFE (internship / thesis)",
+      platform: "Company site",
+      pipeline: "Job (Morocco)",
+      status: "Applied",
+      city: "Casablanca",
+      dateApplied: SEED_DATE,
+      notes:
+        "Final-year project (PFE) — internship / thesis track.\n" +
+        "CV used: CV_Oracle_Morocco_RnD_PFE.tex.\n" +
+        "[placeholder] city + platform + applied-date are guesses — edit.",
+      createdAt: SEED_TS,
+      updatedAt: SEED_TS,
+    },
+    {
+      id: "seed-smile-odoo",
+      // Not yet applied — mapped to Wishlist (no "Draft" status exists).
+      company: "Smile",
+      role: "Odoo Developer",
+      platform: "Company site",
+      pipeline: "Job (Morocco)",
+      status: "Wishlist",
+      city: "Casablanca",
+      dateApplied: SEED_DATE,
+      notes:
+        "DRAFT — not yet applied. Tailored Smile Odoo CV started, not finished.\n" +
+        "Mapped to Wishlist (the model has no 'Draft' status).\n" +
+        "[placeholder] city + platform are guesses; date is the row-created date, " +
+        "not a submission — edit once applied.",
+      createdAt: SEED_TS,
+      updatedAt: SEED_TS,
+    },
+    {
+      id: "seed-saham-ai",
+      // Lead — want to apply — mapped to Wishlist.
+      company: "Saham Bank",
+      role: "AI Engineer",
+      platform: "LinkedIn",
+      pipeline: "Job (Morocco)",
+      status: "Wishlist",
+      city: "Casablanca",
+      dateApplied: SEED_DATE,
+      notes:
+        "LEAD — want to apply. Original posting was removed before I could apply.\n" +
+        "Plan: reach out to the HR contact directly via LinkedIn.\n" +
+        "Mapped to Wishlist. [placeholder] city + platform are guesses; date is the " +
+        "row-created date, not a submission — edit once applied.",
+      createdAt: SEED_TS,
+      updatedAt: SEED_TS,
     },
   ];
 }
@@ -68,70 +163,185 @@ export function emptyProfile(): Profile {
   };
 }
 
-/**
- * An example profile so the Profile page and document generation have something
- * to work with on first run. Clearly placeholder content — overwrite with your
- * own. Mirrors the Morocco-junior-dev context of the seeded applications.
- */
+/** Mamoun's master profile — the source of truth for generated documents. */
 export function seedProfile(): Profile {
   return {
-    fullName: "Yassine Benali",
-    title: "Junior Software Developer",
+    fullName: "Mohamed El Araki Tantaoui (Mamoun)",
+    title:
+      "Final-year Computer Science student — Al Akhawayn University, Ifrane (graduating May 2026)",
     contact: {
-      email: "yassine.benali@example.com",
-      phone: "+212 6 00 00 00 00",
-      city: "Casablanca, Morocco",
-      linkedin: "linkedin.com/in/example",
-      github: "github.com/example",
+      // Left empty on purpose — fill these in-app.
+      email: "",
+      phone: "",
+      city: "Ifrane, Morocco",
+      linkedin: "",
+      github: "github.com/mohamedelarakitantaoui",
       portfolio: "",
     },
     summary:
-      "Junior software developer with a strong foundation in backend development and a freshly completed engineering degree. Comfortable across the Java/Spring and JavaScript ecosystems, eager to ship reliable software and grow on a product team.",
+      "Final-year Computer Science student at Al Akhawayn University (Ifrane), " +
+      "graduating May 2026. Targeting software / AI engineering roles in Casablanca " +
+      "and Rabat, with a longer-horizon track toward a master's + alternance in " +
+      "France (~Sept 2027). Comfortable across React / TypeScript front ends and " +
+      "Python / FastAPI back ends, with hands-on work in LLM APIs, RAG, vector " +
+      "databases and agentic workflows.",
     skills: {
-      languages: ["Java", "JavaScript", "TypeScript", "SQL", "Python"],
-      frameworks: ["Spring Boot", "React", "Node.js", "Express"],
-      tools: ["Git", "Docker", "PostgreSQL", "Linux", "Postman"],
+      languages: ["TypeScript", "Python", "Java", "SQL"],
+      frameworks: ["React", "Node.js", "FastAPI", "PyTorch"],
+      tools: [
+        "LLM APIs (Anthropic / OpenAI)",
+        "RAG",
+        "Vector databases",
+        "Agentic workflows",
+        "Git",
+      ],
     },
     experience: [
       {
-        id: "seed-exp-intern",
-        company: "Atlas Software (internship)",
-        role: "Software Engineering Intern",
-        location: "Casablanca",
-        start: "Feb 2025",
-        end: "Aug 2025",
+        id: "seed-exp-intelcia",
+        company: "Intelcia Solutions",
+        role: "Software Engineer Intern",
+        location: "Rabat, Morocco",
+        start: "", // dates unknown — fill in-app
+        end: "",
         bullets:
-          "Built REST endpoints in Spring Boot for an internal HR tool used by ~200 employees.\nWrote integration tests that raised coverage of the billing module from 40% to 80%.\nCollaborated in a 5-person Agile team with weekly demos.",
+          "Refactored a large monolith into modular services, delivering major performance gains.",
+      },
+      {
+        id: "seed-exp-elaraki",
+        company: "ITS Elaraki School",
+        role: "Web Applications Intern",
+        location: "",
+        start: "",
+        end: "",
+        bullets: "Built and maintained internal web applications.",
       },
     ],
     projects: [
       {
+        id: "seed-proj-aneuxplain",
+        name: "AneuXplain",
+        stack: "FastAPI, React, PyTorch",
+        description:
+          "Explainable ML pipeline for aneurysm rupture-risk prediction (FastAPI backend + React frontend).",
+        outcome: "",
+        url: "",
+      },
+      {
         id: "seed-proj-ledger",
         name: "The Ledger",
-        stack: "React, TypeScript, Vite, Tailwind",
+        stack: "React, TypeScript, Vite, Tailwind, Anthropic API",
         description:
-          "A local-first job application tracker with dashboard stats and JSON backup.",
-        outcome: "Used daily to manage 30+ applications across two pipelines.",
-        url: "github.com/example/the-ledger",
+          "This app — a self-hosted job-application tracker with AI document generation via the Anthropic API.",
+        outcome: "",
+        url: "",
       },
     ],
     education: [
       {
-        id: "seed-edu-eng",
-        school: "École Nationale Supérieure d'Informatique",
-        degree: "Engineering degree (Bac+5)",
-        field: "Software Engineering",
-        start: "2020",
-        end: "2025",
-        location: "Morocco",
+        id: "seed-edu-aui",
+        school: "Al Akhawayn University",
+        degree: "BSc Computer Science",
+        field: "Computer Science",
+        start: "",
+        end: "May 2026 (expected)",
+        location: "Ifrane, Morocco",
+      },
+      {
+        id: "seed-edu-bogazici",
+        school: "Boğaziçi University",
+        degree: "Exchange semester",
+        field: "Computer Science",
+        start: "",
+        end: "",
+        location: "Istanbul, Turkey",
       },
     ],
     languages: [
       { id: "seed-lang-ar", name: "Arabic", level: "Native" },
-      { id: "seed-lang-fr", name: "French", level: "Fluent (C1)" },
-      { id: "seed-lang-en", name: "English", level: "Professional (B2)" },
+      { id: "seed-lang-fr", name: "French", level: "Fluent" },
+      { id: "seed-lang-en", name: "English", level: "Fluent" },
     ],
     certifications: [],
-    updatedAt: "2026-06-02T11:05:00.000Z",
+    updatedAt: SEED_TS,
   };
+}
+
+/**
+ * CV records for the applications that had one. The document model stores
+ * Markdown text (there is no file-attachment field), so each record is a
+ * clearly-marked placeholder pointing at the real source file — paste the CV
+ * text in, or use AI generation to draft a tailored version.
+ *
+ * The Smile CV is an in-progress draft — left NOT final. Saham Bank had no CV.
+ */
+export function seedDocuments(): GeneratedDoc[] {
+  const cv = (
+    applicationId: string,
+    id: string,
+    title: string,
+    sourceFile: string,
+    isFinal: boolean,
+    extra = "",
+  ): GeneratedDoc => ({
+    id,
+    applicationId,
+    type: "cv",
+    language: "en",
+    title,
+    content:
+      `> Placeholder CV record — no source file lives inside the app.\n` +
+      `> Real source: \`${sourceFile}\`. Paste the CV text below, or use AI ` +
+      `generation to draft a tailored version.${extra ? `\n>\n> ${extra}` : ""}\n`,
+    isFinal,
+    createdAt: SEED_TS,
+    updatedAt: SEED_TS,
+  });
+
+  return [
+    cv(
+      "seed-dell-ips",
+      "seed-doc-dell-cv",
+      "CV — Dell Inside Product Specialist (tailored)",
+      "CV_Dell_InsideProductSpecialist.tex",
+      true,
+      "No filename was recorded — this was a tailored CV.",
+    ),
+    cv(
+      "seed-intelcia-swe",
+      "seed-doc-intelcia-cv",
+      "CV — Intelcia Software Engineer",
+      "CV_Intelcia_Software_Engineer.tex",
+      true,
+    ),
+    cv(
+      "seed-phi-quant",
+      "seed-doc-phi-cv",
+      "CV — Phi Partners Quant Developer",
+      "CV_PhiPartners_Quant_Developer.tex",
+      true,
+    ),
+    cv(
+      "seed-leyton-ai",
+      "seed-doc-leyton-cv",
+      "CV — Leyton CognitX AI Engineer",
+      "CV_LeytonCognitX_AI_Engineer.tex",
+      true,
+    ),
+    cv(
+      "seed-oracle-pfe",
+      "seed-doc-oracle-cv",
+      "CV — Oracle Morocco R&D PFE",
+      "CV_Oracle_Morocco_RnD_PFE.tex",
+      true,
+    ),
+    cv(
+      "seed-smile-odoo",
+      "seed-doc-smile-cv",
+      "CV — Smile Odoo Developer (draft, in progress)",
+      "CV_Smile_Odoo_Developer.tex",
+      false, // draft — not final
+      "DRAFT — tailored CV started, not finished.",
+    ),
+  ];
 }

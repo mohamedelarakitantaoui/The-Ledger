@@ -59,7 +59,12 @@ import {
   PLATFORMS,
   STATUSES,
 } from "./constants";
-import { emptyProfile, seedApplications, seedProfile } from "./seed";
+import {
+  emptyProfile,
+  seedApplications,
+  seedDocuments,
+  seedProfile,
+} from "./seed";
 import { generateId, todayISO } from "./utils/format";
 
 export const STORAGE_KEY = "the-ledger.applications.v1";
@@ -417,10 +422,13 @@ function normalizeDoc(input: unknown): GeneratedDoc {
   };
 }
 
+/** Load all documents. Seeds the example CV records on first ever run. */
 export function loadDocuments(): GeneratedDoc[] {
   const parsed = readJSON<unknown>(DOCUMENTS_KEY);
-  if (!Array.isArray(parsed)) return [];
-  return parsed.map(normalizeDoc);
+  if (Array.isArray(parsed)) return parsed.map(normalizeDoc);
+  const seeded = seedDocuments();
+  writeJSON(DOCUMENTS_KEY, seeded);
+  return seeded;
 }
 
 export function getDocumentsFor(applicationId: string): GeneratedDoc[] {
