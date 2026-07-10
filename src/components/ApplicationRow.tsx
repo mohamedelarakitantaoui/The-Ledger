@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { Application } from "../types";
-import { PLATFORM_SHORT } from "../constants";
+import type { Application, Status } from "../types";
+import { PLATFORM_SHORT, STATUSES } from "../constants";
 import { StatusBadge } from "./StatusBadge";
 import { formatDate, relativeFromNow } from "../utils/format";
 
@@ -13,6 +13,7 @@ interface Props {
   onEdit: () => void;
   onDelete: () => void;
   onOpenDocs: () => void;
+  onQuickStatus: (status: Status) => void;
 }
 
 export function ApplicationRow({
@@ -24,21 +25,48 @@ export function ApplicationRow({
   onEdit,
   onDelete,
   onOpenDocs,
+  onQuickStatus,
 }: Props) {
   const [confirming, setConfirming] = useState(false);
 
   return (
     <div className="group border-b border-line transition-colors last:border-b-0">
-      {/* Header — click to expand */}
-      <button
-        onClick={onToggle}
-        aria-expanded={expanded}
-        className="flex w-full items-center gap-4 py-5 text-left transition-colors hover:bg-surface/40"
-      >
-        <span className="w-28 shrink-0 sm:w-32">
-          <StatusBadge status={app.status} />
-        </span>
+      {/* Header — status is a live quick-change control; the rest toggles the row */}
+      <div className="flex w-full items-center gap-4">
+        <div className="w-28 shrink-0 py-5 sm:w-32">
+          <div className="relative inline-flex items-center gap-1">
+            <StatusBadge status={app.status} />
+            <svg
+              className="h-3 w-3 text-faint"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              aria-hidden
+            >
+              <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <select
+              value={app.status}
+              onChange={(e) => onQuickStatus(e.target.value as Status)}
+              aria-label={`Change status for ${app.company}`}
+              className="absolute inset-0 w-full cursor-pointer opacity-0"
+              style={{ colorScheme: "dark" }}
+            >
+              {STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
+        <button
+          onClick={onToggle}
+          aria-expanded={expanded}
+          className="flex min-w-0 flex-1 items-center gap-4 py-5 text-left transition-colors hover:bg-surface/40"
+        >
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">
             <span className="truncate text-[15px] font-medium text-ink">
@@ -83,7 +111,8 @@ export function ApplicationRow({
         >
           <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-      </button>
+        </button>
+      </div>
 
       {/* Accordion body */}
       <div className="accordion" data-open={expanded}>
@@ -104,26 +133,49 @@ export function ApplicationRow({
               <p className="mt-5 font-serif text-base italic text-faint">No notes yet.</p>
             )}
 
-            {app.jobUrl ? (
-              <a
-                href={app.jobUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="mt-4 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-accent-ink transition-colors hover:text-accent"
-              >
-                View listing
-                <svg
-                  className="h-3 w-3"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  aria-hidden
+            <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
+              {app.jobUrl ? (
+                <a
+                  href={app.jobUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-accent-ink transition-colors hover:text-accent"
                 >
-                  <path d="M7 17 17 7M7 7h10v10" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </a>
-            ) : null}
+                  View listing
+                  <svg
+                    className="h-3 w-3"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden
+                  >
+                    <path d="M7 17 17 7M7 7h10v10" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </a>
+              ) : null}
+
+              {app.cvUrl ? (
+                <a
+                  href={app.cvUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-accent-ink transition-colors hover:text-accent"
+                >
+                  Open CV
+                  <svg
+                    className="h-3 w-3"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden
+                  >
+                    <path d="M7 17 17 7M7 7h10v10" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </a>
+              ) : null}
+            </div>
 
             <div className="mt-6 flex items-center justify-between gap-4 border-t border-line pt-4">
               <span className="font-mono text-[10px] text-faint">

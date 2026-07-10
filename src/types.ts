@@ -39,6 +39,8 @@ export interface Application {
   salary?: string;
   /** Optional link back to the original listing. */
   jobUrl?: string;
+  /** Optional link to the CV used for this application (Drive/Dropbox URL, etc.). */
+  cvUrl?: string;
   /** ISO date string (YYYY-MM-DD). */
   dateApplied: string;
   notes: string;

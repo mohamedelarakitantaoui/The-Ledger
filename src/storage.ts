@@ -202,6 +202,7 @@ function normalizeApp(input: unknown): Application {
     city: str(raw.city).trim(),
     salary: str(raw.salary).trim() || undefined,
     jobUrl: str(raw.jobUrl).trim() || undefined,
+    cvUrl: str(raw.cvUrl).trim() || undefined,
     dateApplied: str(raw.dateApplied) || todayISO(),
     notes: str(raw.notes),
     createdAt: str(raw.createdAt) || now,

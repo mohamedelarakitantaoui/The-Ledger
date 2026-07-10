@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Application } from "../types";
+import type { Application, Status } from "../types";
 import { ApplicationRow } from "./ApplicationRow";
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
   onEdit: (app: Application) => void;
   onDelete: (id: string) => void;
   onOpenDocs: (app: Application) => void;
+  onQuickStatus: (id: string, status: Status) => void;
 }
 
 /** The ledger itself — accordion rows, sorted by the parent (dateApplied desc). */
@@ -19,6 +20,7 @@ export function ApplicationList({
   onEdit,
   onDelete,
   onOpenDocs,
+  onQuickStatus,
 }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -53,6 +55,7 @@ export function ApplicationList({
           onEdit={() => onEdit(app)}
           onDelete={() => onDelete(app.id)}
           onOpenDocs={() => onOpenDocs(app)}
+          onQuickStatus={(status) => onQuickStatus(app.id, status)}
         />
       ))}
     </div>

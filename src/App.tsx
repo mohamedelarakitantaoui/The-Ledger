@@ -70,8 +70,9 @@ export default function App() {
   const cvAppIds = useMemo(() => {
     const set = new Set<string>();
     for (const d of docs.documents) if (d.type === "cv") set.add(d.applicationId);
+    for (const a of applications) if (a.cvUrl) set.add(a.id);
     return set;
-  }, [docs.documents]);
+  }, [docs.documents, applications]);
 
   const docCountByApp = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -167,6 +168,11 @@ export default function App() {
     notify("Application removed.");
   }
 
+  function handleQuickStatus(id: string, status: Status) {
+    update(id, { status });
+    notify(`Marked ${status}.`);
+  }
+
   function handleExport() {
     const blob = new Blob([exportJson()], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -258,6 +264,7 @@ export default function App() {
                   onEdit={openEdit}
                   onDelete={handleDelete}
                   onOpenDocs={setDocsApp}
+                  onQuickStatus={handleQuickStatus}
                 />
               ) : (
                 <EmptyState

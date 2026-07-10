@@ -34,6 +34,7 @@ function emptyForm(pipeline: Pipeline): ApplicationInput {
     city: "",
     salary: "",
     jobUrl: "",
+    cvUrl: "",
     dateApplied: todayISO(),
     notes: "",
   };
@@ -56,6 +57,7 @@ export function ApplicationModal({
           city: editing.city,
           salary: editing.salary ?? "",
           jobUrl: editing.jobUrl ?? "",
+          cvUrl: editing.cvUrl ?? "",
           dateApplied: editing.dateApplied,
           notes: editing.notes,
         }
@@ -103,6 +105,7 @@ export function ApplicationModal({
       city: form.city.trim(),
       salary: form.salary?.trim() || "",
       jobUrl: form.jobUrl?.trim() || "",
+      cvUrl: form.cvUrl?.trim() || "",
     });
   }
 
@@ -223,6 +226,16 @@ export function ApplicationModal({
                 value={form.jobUrl}
                 onChange={(e) => set("jobUrl", e.target.value)}
                 placeholder="https://…"
+                className={fieldClass}
+              />
+            </Labeled>
+
+            <Labeled label="CV link" className="col-span-2" hint="optional — Drive/Dropbox URL of the CV you used">
+              <input
+                type="url"
+                value={form.cvUrl}
+                onChange={(e) => set("cvUrl", e.target.value)}
+                placeholder="https://drive.google.com/…"
                 className={fieldClass}
               />
             </Labeled>
