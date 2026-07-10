@@ -81,6 +81,15 @@
     -webkit-box-shadow: 0 0 0px 1000px var(--color-elevated) inset;
     caret-color: var(--color-ink);
   }
+
+  /* Native <select> dropdown popups: force dark, readable options everywhere.
+     color-scheme:dark alone renders as unreadable white-on-white on some
+     Windows browsers, so set explicit option colours. */
+  select option,
+  select optgroup {
+    background-color: #181715;
+    color: #f5f5f0;
+  }
 }
 
 /* ------------------------------------------------------------------ */
