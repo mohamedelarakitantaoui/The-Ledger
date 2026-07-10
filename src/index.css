@@ -16,8 +16,9 @@
   --color-muted: #98917f;
   --color-faint: #67604f;
   --color-line: #23211c;
-  --color-accent: #ff5b2e;
-  --color-accent-ink: #ff7a52;
+  /* Monochrome accent — no coloured highlight; emphasis carried by bright off-white. */
+  --color-accent: #e8e5dd;
+  --color-accent-ink: #f3f1ea;
 
   --ease-weighty: cubic-bezier(0.16, 1, 0.3, 1);
 }
